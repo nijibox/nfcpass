@@ -1,11 +1,17 @@
-import {ACK} from './usb'
-import {arrayToHexString} from './utils'
+import { ACK } from './usb'
+import { arrayToHexString } from './utils'
 
 export class DeviceLoader {
   static async connectDevice () {
-    const filter = {vendorId: 0x054c, protocolCode: 0x01}
+    const filter = {
+      vendorId: 0x054c,
+      protocolCode: 0x01,
+    }
     try {
-      const device = await navigator.usb.requestDevice({filters: [filter]})
+      const conf = {
+        filters: [filter],
+      }
+      const device = await navigator.usb.requestDevice(conf)
       await device.open()
       await device.selectConfiguration(1)
       await device.claimInterface(0)
