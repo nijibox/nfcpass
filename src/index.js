@@ -5,7 +5,6 @@ export class DeviceLoader {
   static async connectDevice () {
     const filter = {
       vendorId: 0x054c,
-      protocolCode: 0x01,
     }
     try {
       const conf = {
