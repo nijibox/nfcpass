@@ -1,32 +1,13 @@
 import { ACK } from './usb'
 import { arrayToHexString } from './utils'
 
-export class DeviceLoader {
-  static async connectDevice () {
-    const filter = {
-      vendorId: 0x054c,
-    }
-    try {
-      const conf = {
-        filters: [filter],
-      }
-      const device = await navigator.usb.requestDevice(conf)
-      await device.open()
-      await device.selectConfiguration(1)
-      await device.claimInterface(0)
-      return new NFCDevice(device)
-    } catch (e) {
-      throw e
-    }
-  }
-}
 
 class CardInfo {
   public readonly spec: string
   public readonly idm: string
   public readonly pmm: string|null
 
-  constructor (spec: string, idm: string, pmm: string|null) {
+  public constructor (spec: string, idm: string, pmm: string|null) {
     this.spec = spec
     this.idm = idm
     this.pmm = pmm
@@ -36,11 +17,11 @@ class CardInfo {
 class NFCDevice {
   public readonly device: any
 
-  constructor (device: any) {
+  public constructor (device: any) {
     this.device = device
   }
 
-  async receive (len: number) {
+  public async receive (len: number) {
     let data = await this.device.transferIn(1, len)
     console.debug(data)
     let arr = []
@@ -51,13 +32,13 @@ class NFCDevice {
     return arr
   }
 
-  async send (data: any) {
+  public async send (data: any) {
     let uint8a = new Uint8Array(data)
     console.debug(uint8a)
     await this.device.transferOut(2, uint8a)
   }
 
-  async sendCommand (cmd: any, params: any) {
+  public async sendCommand (cmd: any, params: any) {
     let command = [0x00, 0x00, 0xff, 0xff, 0xff]
     let data = [0xd6, cmd].concat(params)
     command = command.concat([data.length, 0, 256 - data.length])
@@ -74,7 +55,7 @@ class NFCDevice {
     return result
   }
 
-  async getType2TagInfo () {
+  public async getType2TagInfo () {
     console.debug('SwitchRF')
     await this.sendCommand(0x06, [0x00])
     console.debug('InSetRF')
@@ -92,7 +73,7 @@ class NFCDevice {
     return result === '00' ? null : new CardInfo('Type4', result, null)
   }
 
-  async getType3TagInfo () {
+  public async getType3TagInfo () {
     await this.sendCommand(0x2a, [0x01])
     console.debug('SwitchRF')
     await this.sendCommand(0x06, [0x00])
@@ -106,7 +87,7 @@ class NFCDevice {
     return new CardInfo('Type3', arrayToHexString(data.slice(17, 25)), arrayToHexString(data.slice(25, 33)))
   }
 
-  async readCardInfo () {
+  public async readCardInfo () {
     await this.send(ACK)
     console.debug('GetProperty')
     await this.sendCommand(0x2a, [0x01])
@@ -121,11 +102,33 @@ class NFCDevice {
     return null
   }
 
-  async readIDm () {
+  public async readIDm () {
     const card = await this.readCardInfo()
     if (card != null && card.idm != null) {
       return card.idm
     }
     return ''
+  }
+}
+
+
+
+export class DeviceLoader {
+  public static async connectDevice () {
+    const filter = {
+      vendorId: 0x054c,
+    }
+    try {
+      const conf = {
+        filters: [filter],
+      }
+      const device = await navigator.usb.requestDevice(conf)
+      await device.open()
+      await device.selectConfiguration(1)
+      await device.claimInterface(0)
+      return new NFCDevice(device)
+    } catch (e) {
+      throw e
+    }
   }
 }
