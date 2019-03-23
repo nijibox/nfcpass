@@ -22,7 +22,11 @@ export class DeviceLoader {
 }
 
 class CardInfo {
-  constructor (spec, idm, pmm) {
+  public readonly spec: string
+  public readonly idm: string
+  public readonly pmm: string|null
+
+  constructor (spec: string, idm: string, pmm: string|null) {
     this.spec = spec
     this.idm = idm
     this.pmm = pmm
@@ -30,11 +34,13 @@ class CardInfo {
 }
 
 class NFCDevice {
-  constructor (device) {
+  public readonly device: any
+
+  constructor (device: any) {
     this.device = device
   }
 
-  async receive (len) {
+  async receive (len: number) {
     let data = await this.device.transferIn(1, len)
     console.debug(data)
     let arr = []
@@ -45,13 +51,13 @@ class NFCDevice {
     return arr
   }
 
-  async send (data) {
+  async send (data: any) {
     let uint8a = new Uint8Array(data)
     console.debug(uint8a)
     await this.device.transferOut(2, uint8a)
   }
 
-  async sendCommand (cmd, params) {
+  async sendCommand (cmd: any, params: any) {
     let command = [0x00, 0x00, 0xff, 0xff, 0xff]
     let data = [0xd6, cmd].concat(params)
     command = command.concat([data.length, 0, 256 - data.length])
