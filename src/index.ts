@@ -15,13 +15,13 @@ class CardInfo {
 }
 
 class NFCDevice {
-  public readonly device: any
+  public readonly device: USBDevice
 
-  public constructor (device: any) {
+  public constructor (device: USBDevice) {
     this.device = device
   }
 
-  public async receive (len: number) {
+  public async receive (len: number): number[] {
     let data = await this.device.transferIn(1, len)
     console.debug(data)
     let arr = []
@@ -32,13 +32,13 @@ class NFCDevice {
     return arr
   }
 
-  public async send (data: any) {
+  public async send (data: number[]): void {
     let uint8a = new Uint8Array(data)
     console.debug(uint8a)
     await this.device.transferOut(2, uint8a)
   }
 
-  public async sendCommand (cmd: any, params: any) {
+  public async sendCommand (cmd: number[], params: number[]): number[] {
     let command = [0x00, 0x00, 0xff, 0xff, 0xff]
     let data = [0xd6, cmd].concat(params)
     command = command.concat([data.length, 0, 256 - data.length])
@@ -55,7 +55,7 @@ class NFCDevice {
     return result
   }
 
-  public async getType2TagInfo () {
+  public async getType2TagInfo (): CardInfo {
     console.debug('SwitchRF')
     await this.sendCommand(0x06, [0x00])
     console.debug('InSetRF')
@@ -73,7 +73,7 @@ class NFCDevice {
     return result === '00' ? null : new CardInfo('Type4', result, null)
   }
 
-  public async getType3TagInfo () {
+  public async getType3TagInfo (): CardInfo {
     await this.sendCommand(0x2a, [0x01])
     console.debug('SwitchRF')
     await this.sendCommand(0x06, [0x00])
@@ -87,7 +87,7 @@ class NFCDevice {
     return new CardInfo('Type3', arrayToHexString(data.slice(17, 25)), arrayToHexString(data.slice(25, 33)))
   }
 
-  public async readCardInfo () {
+  public async readCardInfo (): CardInfo|null {
     await this.send(ACK)
     console.debug('GetProperty')
     await this.sendCommand(0x2a, [0x01])
@@ -102,7 +102,7 @@ class NFCDevice {
     return null
   }
 
-  public async readIDm () {
+  public async readIDm (): string {
     const card = await this.readCardInfo()
     if (card != null && card.idm != null) {
       return card.idm
@@ -114,7 +114,7 @@ class NFCDevice {
 
 
 export class DeviceLoader {
-  public static async connectDevice () {
+  public static async connectDevice (): NFCDevice {
     const filter = {
       vendorId: 0x054c,
     }
