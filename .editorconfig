@@ -12,7 +12,7 @@ trim_trailing_whitespace = false
 
 
 # 2 space indentation
-[*.{yml,js,json,rst}]
+[*.{yml,js,ts,json,rst}]
 indent_size = 2
 
 # 4 space indentation
