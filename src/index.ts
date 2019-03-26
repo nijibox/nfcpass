@@ -2,7 +2,7 @@ import { ACK } from './usb'
 import { arrayToHexString } from './utils'
 
 
-class CardInfo {
+export class CardInfo {
   public readonly spec: string
   public readonly idm: string
   public readonly pmm: string|null
@@ -14,7 +14,8 @@ class CardInfo {
   }
 }
 
-class NFCDevice {
+
+export class NFCDevice {
   public readonly device: USBDevice
 
   public constructor (device: USBDevice) {
@@ -110,7 +111,6 @@ class NFCDevice {
     return ''
   }
 }
-
 
 
 export class DeviceLoader {

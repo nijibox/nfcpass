@@ -1,11 +1,11 @@
 /// <reference types="w3c-web-usb" />
-declare class CardInfo {
+export declare class CardInfo {
     readonly spec: string;
     readonly idm: string;
     readonly pmm: string | null;
     constructor(spec: string, idm: string, pmm: string | null);
 }
-declare class NFCDevice {
+export declare class NFCDevice {
     readonly device: USBDevice;
     constructor(device: USBDevice);
     receive(len: number): Promise<number[]>;
@@ -19,4 +19,3 @@ declare class NFCDevice {
 export declare class DeviceLoader {
     static connectDevice(): Promise<NFCDevice>;
 }
-export {};
