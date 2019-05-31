@@ -17,6 +17,7 @@ USB接続された、PaSoRiを通してNFC規格のカードから以下の情�
 
 #### 1. npmで使用するように設定
 
+
 ```
 npm i -S nijibox/nfcpass
 ```
@@ -25,7 +26,7 @@ npm i -S nijibox/nfcpass
 
 (すごく雑な例)
 
-```
+```javascript
 import { DeviceLoader } from 'nfcpass'
 
 document.getElementById('button-nfcpass')
