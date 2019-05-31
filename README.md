@@ -30,7 +30,8 @@ import { DeviceLoader } from 'nfcpass'
 
 document.getElementById('button-nfcpass')
   .addEventListener('click', async (e) => {
-    // ここにカードリーダー接続
+    // ここでカードリーダー接続
+    let device
     try {
       device = await DeviceLoader.connectDevice()
     } catch (err) {
